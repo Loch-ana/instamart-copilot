@@ -42,7 +42,21 @@ Run these from an empty folder after cloning the repository (Windows Command Pro
 | products | (40, 4) | none |
 | orders | (13084, 9) | order_amount 53 (0.41%), delivery_minutes 2541 (19.42%) |
 
-Data types: ids, city, gender, status and timestamps are text; `age` and `delivery_minutes` are decimal numbers; `quantity`, `discount_pct`, `price_inr` are integers; `order_amount` is text because it contains the words `N/A` and `error`. Pandas reads `N/A` as missing, which is why 53 amounts show as missing, while the other 67 are the word `error`; together they are the 120 unusable amounts.
+Data type and missing values for every column (count and percentage of rows):
+
+| Table | Column | Type | Missing |
+|---|---|---|---|
+| customers | customer_id, city, signup_date | text | 0 (0.00%) |
+| customers | age | decimal number | 61 (5.08%) |
+| customers | gender | text | 30 (2.50%) |
+| products | product_id, product_name, category | text | 0 (0.00%) |
+| products | price_inr | integer | 0 (0.00%) |
+| orders | order_id, customer_id, product_id, order_ts, status | text | 0 (0.00%) |
+| orders | quantity, discount_pct | integer | 0 (0.00%) |
+| orders | order_amount | text | 53 (0.41%) |
+| orders | delivery_minutes | decimal number | 2,541 (19.42%) |
+
+`order_amount` is text because it contains the words `N/A` and `error`. Pandas reads `N/A` as missing, which is why 53 amounts show as missing, while the other 67 are the word `error`; together they are the 120 unusable amounts.
 
 | Audit figure | Value |
 |---|---|
@@ -182,7 +196,13 @@ Recall moved most (0.629 to 0.865) while precision did not rise (0.592). The ret
 
 ### Interpretation, saved model and retention list
 
-Top five random-forest features: frequency 0.284, monetary 0.275, recency 0.123, average delivery minutes 0.062, cancellation rate 0.048. Customers who order often and spend more are the stable ones; slow deliveries and cancellations also matter.
+Top five random-forest features (importance shows how much a feature matters, not in which direction):
+
+- frequency 0.284: how often a customer orders is the strongest sign of loyalty; habit keeps people from leaving.
+- monetary 0.275: total spend shows how invested the customer is; it overlaps with frequency, so the two share the work.
+- recency 0.123: a long silence since the last order is an early warning to act on.
+- average delivery minutes 0.062: delivery speed carries some signal, so it is worth checking whether slow deliveries push customers away.
+- cancellation rate 0.048: customers who cancel often may be less committed or may be hitting stock or delivery problems.
 
 Logistic regression coefficients (positive means more likely to lapse): frequency -1.627 (each extra order strongly lowers lapse risk, the clearest loyalty signal), monetary +0.222 (once frequency is accounted for, a big spender with few orders is at more risk), recency +0.042 (a longer gap since the last order slightly raises the risk).
 
